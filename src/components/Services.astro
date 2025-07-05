@@ -1,0 +1,36 @@
+---
+const services = [
+  {
+    name: 'Diseño de Interiores',
+    description: 'Soluciones completas de diseño que reflejan tu personalidad y estilo de vida.',
+    image: 'https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  },
+  {
+    name: 'Diseño de Cocinas',
+    description: 'Creamos cocinas funcionales, modernas y acogedoras, optimizando cada espacio.',
+    image: 'https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  },
+  {
+    name: 'Diseño de Salas de Estar',
+    description: 'Transformamos tu sala en el corazón de tu hogar, un lugar para relajarte y compartir.',
+    image: 'https://images.pexels.com/photos/1571459/pexels-photo-1571459.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+  },
+];
+---
+
+<section id="services" class="py-20 bg-beige-gold">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center text-olive-dark mb-12">Nuestros Servicios</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {services.map(service => (
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+          <img src={service.image} alt={service.name} class="w-full h-64 object-cover"/>
+          <div class="p-6">
+            <h3 class="text-2xl font-bold text-olive-dark mb-2">{service.name}</h3>
+            <p class="text-gray-700">{service.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

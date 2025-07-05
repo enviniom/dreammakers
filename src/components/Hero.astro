@@ -1,0 +1,60 @@
+---
+import Button from './Button.astro';
+---
+
+<section class="relative h-screen flex items-center justify-center">
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    class="absolute top-0 left-0 w-full h-full object-cover z-20"
+    src="hero-background.mp4"
+  >
+  </video>
+  <div class="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-10"></div>
+  <div class="relative z-20 text-center text-white p-4">
+    <h1 class="text-5xl md:text-7xl font-bold mb-4 animate-fade-in-down">Creamos el espacio de tus sueños</h1>
+    <p class="text-lg md:text-2xl mb-8 animate-fade-in-up">Diseño de interiores que inspira y transforma.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <Button href="#products" text="Nuestros Productos" />
+      <Button href="#services" text="Nuestros Servicios" />
+      <Button
+        href="#gallery"
+        text="Ver Galería"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes fade-in-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-down {
+    animation: fade-in-down 1s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 1s ease-out 0.5s forwards;
+  }
+</style>

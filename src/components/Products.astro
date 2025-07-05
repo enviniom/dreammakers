@@ -1,0 +1,42 @@
+---
+import { Image } from 'astro:assets';
+import papelTapiz from '../assets/papel_tapiz.png';
+import persiana from '../assets/persiana_cortina.png';
+import entertainment from '../assets/centro_entretenimiento.png';
+// Placeholder images from a service like Pexels or Unsplash.
+// You should replace these with your actual product images.
+const products = [
+  {
+    name: 'Papel Tapiz',
+    description: 'Diseños exclusivos que transforman cualquier pared en una obra de arte.',
+    image: papelTapiz.src,
+  },
+  {
+    name: 'Persianas y Cortinas',
+    description: 'Funcionalidad y estilo que se adaptan a tus necesidades. Opciones de domotización disponibles.',
+    image: persiana.src,
+  },
+  {
+    name: 'Centros de Entretenimiento',
+    description: 'Mobiliario a medida para integrar tecnología y diseño en tu sala de estar.',
+    image: entertainment.src,
+  },
+];
+---
+
+<section id="products" class="py-20 bg-white">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center text-olive-dark mb-12">Nuestros Productos</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {products.map(product => (
+        <div class="bg-beige-gold rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+          <img src={product.image} alt={product.name} class="w-full h-64 object-cover"/>
+          <div class="p-6">
+            <h3 class="text-2xl font-bold text-olive-dark mb-2">{product.name}</h3>
+            <p class="text-gray-700">{product.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
