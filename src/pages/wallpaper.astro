@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+
+const images = await Astro.glob('../assets/products/wallpaper/*.png');
+const pdfs = await Astro.glob('../assets/products/wallpaper/*.pdf');
+const files = [
+  'Abruzzo',
+  'BabyWorld',
+  'Liquidacion',
+  'Marsella',
+  'Oxford',
+  'Puglia',
+  'Veneto',
+];
+
+const wallpapers = files.map(file => {
+  const image = images.find(image => image.default.src.includes(file));
+  const pdf = pdfs.find(p => p.default.includes(file));
+  return {
+    name: file,
+    image: image?.default,
+    pdf: pdf?.default.src,
+  };
+})
+
+const products = files.map(name => {
+  const image = images.find(file => file.default.src.includes(`${name}.png`));
+  const pdf = pdfs.find(file => file.default.includes(`${name}.pdf`));
+  return {
+    name,
+    image: image ? image.default : null,
+    pdf: pdf ? pdf.default : null,
+  };
+}).filter(product => product.image && product.pdf);
+
+---
+
+<Layout>
+  <Header />
+  <main class="container mx-auto px-6 py-8">
+    <h1 class="text-4xl font-bold text-center mt-15 text-olive-dark mb-12">Papel Tapiz</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {products.map(wallpaper => (
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer" data-pdf={wallpaper.pdf}>
+          <Image src={wallpaper.image} alt={wallpaper.name} class="w-full h-80 object-cover"/>
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-olive-dark text-center">{wallpaper.name}</h3>
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+  <Footer />
+
+  <div id="pdf-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-4 rounded-lg shadow-lg w-11/12 h-5/6 relative">
+      <button id="close-modal" class="absolute top-2 right-2 text-black font-bold text-2xl">&times;</button>
+      <iframe id="pdf-viewer" class="w-full h-full" frameborder="0"></iframe>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('pdf-modal');
+    const pdfViewer = document.getElementById('pdf-viewer');
+    const closeModal = document.getElementById('close-modal');
+    const wallpaperItems = document.querySelectorAll('[data-pdf]');
+
+    wallpaperItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const pdfPath = item.getAttribute('data-pdf');
+        if (pdfPath && modal && pdfViewer) {
+          pdfViewer.setAttribute('src', pdfPath);
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+      });
+    });
+
+    if(closeModal && modal){
+        closeModal.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if(pdfViewer){
+                pdfViewer.setAttribute('src', '');
+            }
+        });
+    }
+
+    if(modal){
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                if(pdfViewer){
+                    pdfViewer.setAttribute('src', '');
+                }
+            }
+        });
+    }
+  });
+</script>
