@@ -1,19 +1,26 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
+
+const { pathname } = Astro.url;
+const isHomePage = pathname === '/';
+
+const getLink = (id: string) => {
+    return isHomePage ? `#${id}` : `/${id === 'home' ? '' : '#' + id}`;
+}
 ---
 
 <header class="fixed top-0 left-0 w-full bg-beige-gold bg-opacity-80 backdrop-blur-sm z-50 shadow-md">
   <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-    <a class="flex items-center" href="/">
+    <a class="flex items-center" href={getLink('home')}>
       <Image src={logo} alt="Dreammakers Logo" width={50} height={50} class="rounded-full" />
       <span class="ml-4 text-2xl font-bold text-olive-dark">Dreammakers</span>
     </a>
     <div class="hidden md:flex items-center space-x-6">
-      <a href="#products" class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Productos</a>
-      <a href="#services" class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Servicios</a>
-      <a href="#gallery" class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Galería</a>
-      <a href="#contact" class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Contacto</a>
+      <a href={getLink('products')} class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Productos</a>
+      <a href={getLink('services')} class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Servicios</a>
+      <a href={getLink('gallery')} class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Galería</a>
+      <a href={getLink('contact')} class="text-olive-dark hover:text-gray-900 transition-colors duration-300">Contacto</a>
     </div>
     <div class="md:hidden">
       <!-- Mobile menu button -->
@@ -26,10 +33,10 @@ import logo from '../assets/logo.png';
   </nav>
   <!-- Mobile menu -->
   <div id="mobile-menu" class="hidden md:hidden bg-beige-gold bg-opacity-95">
-    <a href="#products" class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Productos</a>
-    <a href="#services" class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Servicios</a>
-    <a href="#gallery" class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Galería</a>
-    <a href="#contact" class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Contacto</a>
+    <a href={getLink('products')} class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Productos</a>
+    <a href={getLink('services')} class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Servicios</a>
+    <a href={getLink('gallery')} class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Galería</a>
+    <a href={getLink('contact')} class="block py-2 px-4 text-sm text-olive-dark hover:bg-olive-dark hover:text-beige-gold">Contacto</a>
   </div>
 </header>
 
