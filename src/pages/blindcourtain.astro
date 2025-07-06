@@ -4,39 +4,53 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
 
-const courtainImages = await Astro.glob('../assets/products/courtain/*.png');
-const blindImages = await Astro.glob('../assets/products/blind/*.png');
-const courtainPdfs = await Astro.glob('../assets/products/courtain/*.pdf');
+const courtainImageModules = import.meta.glob<{ default: ImageMetadata }>('../assets/products/courtain/*.png', { eager: true });
+const blindImageModules = import.meta.glob<{ default: ImageMetadata }>('../assets/products/blind/*.png', { eager: true });
+const courtainPdfModules = import.meta.glob<{ default: string }>('../assets/products/courtain/*.pdf', { eager: true });
 
-const courtains = [
-  'BlackOut',
-  'Velo',
-  'TelaPesada'
-];
-const blinds = [
-  'Enrollable',
-  'SheerScreeen',
-  'PanelJapones'
-];
+const courtainProducts = Object.keys(courtainImageModules)
+  .map(imagePath => {
+    const fileName = imagePath.split('/').pop()?.replace('.png', '');
+    if (!fileName) {
+      return null;
+    }
 
-const courtainProducts = courtains.map(name => {
-  const image = courtainImages.find(file => file.default.src.includes(`${name}.png`));
-  const pdf = courtainPdfs.find(file => file.default.includes(`${name}.pdf`));
-  return {
-    name,
-    image: image ? image.default : null,
-    pdf: pdf ? pdf.default : null,
-  };
-});
+    const pdfPath = `../assets/products/courtain/${fileName}.pdf`;
+    const pdfModule = courtainPdfModules[pdfPath];
+    const imageModule = courtainImageModules[imagePath];
 
-const blindProducts = blinds.map(name => {
-  const image = blindImages.find(file => file.default.src.includes(`${name}.png`));
-  return {
-    name,
-    image: image ? image.default : null,
-    pdf: null, // Blinds don't have PDFs
-  };
-});
+    if (!imageModule) {
+      return null;
+    }
+
+    return {
+      name: fileName,
+      image: imageModule.default,
+      pdf: pdfModule ? pdfModule.default : null,
+    };
+  })
+  .filter((p): p is NonNullable<typeof p> => p !== null);
+
+const blindProducts = Object.keys(blindImageModules)
+    .map(imagePath => {
+        const fileName = imagePath.split('/').pop()?.replace('.png', '');
+        if (!fileName) {
+            return null;
+        }
+        const imageModule = blindImageModules[imagePath];
+
+        if (!imageModule) {
+            return null;
+        }
+
+        return {
+            name: fileName,
+            image: imageModule.default,
+            pdf: null,
+        };
+    })
+    .filter((p): p is NonNullable<typeof p> => p !== null);
+
 
 const products = [...courtainProducts, ...blindProducts].filter(product => product.image);
 

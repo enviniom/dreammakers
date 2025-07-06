@@ -4,37 +4,31 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
 
-const images = await Astro.glob('../assets/products/wallpaper/*.png');
-const pdfs = await Astro.glob('../assets/products/wallpaper/*.pdf');
-const files = [
-  'Abruzzo',
-  'BabyWorld',
-  'Liquidacion',
-  'Marsella',
-  'Oxford',
-  'Puglia',
-  'Veneto',
-];
+const imageModules = import.meta.glob<{ default: ImageMetadata }>('../assets/products/wallpaper/*.png', { eager: true });
+const pdfModules = import.meta.glob<{ default: string }>('../assets/products/wallpaper/*.pdf', { eager: true });
 
-const wallpapers = files.map(file => {
-  const image = images.find(image => image.default.src.includes(file));
-  const pdf = pdfs.find(p => p.default.includes(file));
-  return {
-    name: file,
-    image: image?.default,
-    pdf: pdf?.default.src,
-  };
-})
+const products = Object.keys(imageModules)
+  .map(imagePath => {
+    const fileName = imagePath.split('/').pop()?.replace('.png', '');
+    if (!fileName) {
+      return null;
+    }
 
-const products = files.map(name => {
-  const image = images.find(file => file.default.src.includes(`${name}.png`));
-  const pdf = pdfs.find(file => file.default.includes(`${name}.pdf`));
-  return {
-    name,
-    image: image ? image.default : null,
-    pdf: pdf ? pdf.default : null,
-  };
-}).filter(product => product.image && product.pdf);
+    const pdfPath = `../assets/products/wallpaper/${fileName}.pdf`;
+    const pdfModule = pdfModules[pdfPath];
+    const imageModule = imageModules[imagePath];
+
+    if (!imageModule || !pdfModule) {
+      return null;
+    }
+
+    return {
+      name: fileName,
+      image: imageModule.default,
+      pdf: pdfModule.default,
+    };
+  })
+  .filter((p): p is NonNullable<typeof p> => p !== null);
 
 ---
 
