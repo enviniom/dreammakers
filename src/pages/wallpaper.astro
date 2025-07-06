@@ -49,52 +49,183 @@ const products = Object.keys(imageModules)
   </main>
   <Footer />
 
+  <!-- Modal PDF simplificado -->
   <div id="pdf-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white p-4 rounded-lg shadow-lg w-11/12 h-5/6 relative">
-      <button id="close-modal" class="absolute top-2 right-2 text-black font-bold text-2xl">&times;</button>
-      <iframe id="pdf-viewer" class="w-full h-full" frameborder="0"></iframe>
-    </div>
+      <div class="pdf-modal-content bg-white p-2 sm:p-4 rounded-lg shadow-lg w-full h-full sm:w-11/12 sm:h-5/6 relative">
+          <!-- Barra de herramientas simplificada -->
+          <div class="flex justify-end items-center mb-2 bg-gray-100 p-2 rounded">
+              <button id="close-modal" class="text-black font-bold text-2xl hover:text-red-500">
+                  &times;
+              </button>
+          </div>
+          
+          <!-- Contenedor del PDF -->
+          <div class="pdf-container">
+              <div class="pdf-iframe-wrapper">
+                  <div class="pdf-loading">
+                      <div class="text-center">
+                          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                          <p class="mt-2 text-sm text-gray-600">Cargando PDF...</p>
+                      </div>
+                  </div>
+                  <iframe id="pdf-viewer" class="pdf-iframe" frameborder="0"></iframe>
+              </div>
+          </div>
+      </div>
   </div>
 </Layout>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('pdf-modal');
-    const pdfViewer = document.getElementById('pdf-viewer');
-    const closeModal = document.getElementById('close-modal');
-    const wallpaperItems = document.querySelectorAll('[data-pdf]');
+  // Interfaces TypeScript simplificadas
+  interface PDFModalElements {
+      modal: HTMLElement | null;
+      pdfViewer: HTMLIFrameElement | null;
+      closeModal: HTMLButtonElement | null;
+      pdfLoading: HTMLElement | null;
+  }
 
-    wallpaperItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const pdfPath = item.getAttribute('data-pdf');
-        if (pdfPath && modal && pdfViewer) {
-          pdfViewer.setAttribute('src', pdfPath);
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-        }
-      });
-    });
+  class PDFModal {
+      private elements: PDFModalElements;
+      private currentPdfUrl: string = '';
 
-    if(closeModal && modal){
-        closeModal.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            if(pdfViewer){
-                pdfViewer.setAttribute('src', '');
-            }
-        });
-    }
+      constructor() {
+          this.elements = this.getElements();
+          this.init();
+      }
 
-    if(modal){
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                if(pdfViewer){
-                    pdfViewer.setAttribute('src', '');
-                }
-            }
-        });
-    }
+      private getElements(): PDFModalElements {
+          return {
+              modal: document.getElementById('pdf-modal'),
+              pdfViewer: document.getElementById('pdf-viewer') as HTMLIFrameElement | null,
+              closeModal: document.getElementById('close-modal') as HTMLButtonElement | null,
+              pdfLoading: document.querySelector('.pdf-loading') as HTMLElement | null
+          };
+      }
+
+      private init(): void {
+          this.setupEventListeners();
+      }
+
+      private setupEventListeners(): void {
+          this.setupPDFItemListeners();
+          this.setupModalControls();
+          this.setupIframeLoadListener();
+      }
+
+      private setupPDFItemListeners(): void {
+          const wallpaperItems: NodeListOf<HTMLElement> = document.querySelectorAll('[data-pdf]');
+          
+          wallpaperItems.forEach((item: HTMLElement) => {
+              item.addEventListener('click', (event: Event) => {
+                  this.handlePDFItemClick(event);
+              });
+          });
+      }
+
+      private setupModalControls(): void {
+          this.elements.closeModal?.addEventListener('click', () => {
+              this.closeModal();
+          });
+
+          this.elements.modal?.addEventListener('click', (event: Event) => {
+              if (event.target === this.elements.modal) {
+                  this.closeModal();
+              }
+          });
+      }
+
+      private setupIframeLoadListener(): void {
+          this.elements.pdfViewer?.addEventListener('load', () => {
+              this.showLoading(false);
+          });
+      }
+
+      private handlePDFItemClick(event: Event): void {
+          const target = event.currentTarget as HTMLElement;
+          const pdfPath: string | null = target.getAttribute('data-pdf');
+          
+          if (pdfPath && this.elements.modal && this.elements.pdfViewer) {
+              this.openPDF(pdfPath);
+          }
+      }
+
+      private openPDF(pdfPath: string): void {
+          this.currentPdfUrl = pdfPath;
+          this.showLoading(true);
+          
+          // Cargar PDF sin parámetros adicionales para mostrar controles nativos
+          this.elements.pdfViewer?.setAttribute('src', pdfPath);
+          this.showModal();
+      }
+
+      private showModal(): void {
+          this.elements.modal?.classList.remove('hidden');
+          this.elements.modal?.classList.add('flex');
+      }
+
+      private closeModal(): void {
+          this.elements.modal?.classList.add('hidden');
+          this.elements.modal?.classList.remove('flex');
+          this.elements.pdfViewer?.setAttribute('src', '');
+          this.currentPdfUrl = '';
+          this.showLoading(false);
+      }
+
+      private showLoading(show: boolean): void {
+          if (this.elements.pdfLoading) {
+              this.elements.pdfLoading.style.display = show ? 'block' : 'none';
+          }
+      }
+  }
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', (): void => {
+      new PDFModal();
   });
 </script>
+
+<style>
+/* Estilos para el contenedor del PDF */
+.pdf-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Estilos específicos para dispositivos móviles */
+@media (max-width: 640px) {
+    .pdf-modal-content {
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .pdf-iframe {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Contenedor del iframe */
+.pdf-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+</style>
