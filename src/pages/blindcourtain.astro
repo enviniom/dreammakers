@@ -25,7 +25,7 @@ const courtainProducts = courtains.map(name => {
   return {
     name,
     image: image ? image.default : null,
-    pdf: pdf ? pdf.default.src : null,
+    pdf: pdf ? pdf.default : null,
   };
 });
 
