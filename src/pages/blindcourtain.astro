@@ -47,9 +47,9 @@ const products = [...courtainProducts, ...blindProducts].filter(product => produ
   <main class="container mx-auto px-6 py-8">
     <h1 class="text-4xl font-bold text-center mt-15 text-olive-dark mb-12">Persianas y Cortinas</h1>
     <h2 class="text-2xl font-bold text-center mt-3 text-olive-dark mb-12">Persianas</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div class="flex flex-wrap justify-center gap-8">
       {blindProducts.map(product => (
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer" data-pdf={product.pdf}>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer w-full max-w-sm" data-pdf={product.pdf}>
           <Image src={product.image} alt={product.name} class="w-full h-80 object-cover"/>
           <div class="p-4">
             <h3 class="text-lg font-bold text-olive-dark text-center">{product.name}</h3>
@@ -58,9 +58,9 @@ const products = [...courtainProducts, ...blindProducts].filter(product => produ
       ))}
     </div>
     <h2 class="text-2xl font-bold text-center mt-3 text-olive-dark mb-12">Cortinas</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div class="flex flex-wrap justify-center gap-8">
       {courtainProducts.map(product => (
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer" data-pdf={product.pdf}>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer w-full max-w-sm" data-pdf={product.pdf}>
           <Image src={product.image} alt={product.name} class="w-full h-80 object-cover"/>
           <div class="p-4">
             <h3 class="text-lg font-bold text-olive-dark text-center">{product.name}</h3>
