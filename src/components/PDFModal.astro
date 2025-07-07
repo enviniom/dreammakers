@@ -95,7 +95,16 @@
           const target = event.currentTarget as HTMLElement;
           const pdfPath: string | null = target.getAttribute('data-pdf');
           
-          if (pdfPath && this.elements.modal && this.elements.pdfViewer) {
+          if (!pdfPath) return;
+
+          // Para pantallas pequeñas (sm: 640px), abrir en una nueva pestaña
+          if (window.matchMedia("(max-width: 799px)").matches) {
+              window.open(pdfPath, '_blank');
+              return;
+          }
+          
+          // Para pantallas grandes, abrir en el modal
+          if (this.elements.modal && this.elements.pdfViewer) {
               this.openPDF(pdfPath);
           }
       }
