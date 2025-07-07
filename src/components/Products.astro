@@ -29,19 +29,21 @@ const products = [
     <h2 class="text-4xl font-bold text-center text-olive-dark mb-12">Nuestros Productos</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
       {products.map(product => {
-        const isWallpaper = product.name === 'Papel Tapiz';
-        const isBlindCourtain = product.name === 'Persianas y Cortinas';
-        const ProductWrapper = isWallpaper || isBlindCourtain ? 'a' : 'div';
-        const props = isWallpaper ? { href: '/wallpaper' } : isBlindCourtain ? { href: '/blindcourtain' } : {};
+        const propHrefs: { [key: string]: string } = {
+          'Papel Tapiz': '/wallpaper',
+          'Persianas y Cortinas': '/blindcourtain',
+          'Centros de Entretenimiento': '/entertainment',
+        };
+        const link = propHrefs[product.name];
 
         return (
-          <ProductWrapper {...props} class="bg-beige-gold rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+          <a href={link} class="bg-beige-gold rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
             <img src={product.image} alt={product.name} class="w-full h-64 object-cover"/>
             <div class="p-6">
               <h3 class="text-2xl font-bold text-olive-dark mb-2">{product.name}</h3>
               <p class="text-gray-700">{product.description}</p>
             </div>
-          </ProductWrapper>
+          </a>
         );
       })}
     </div>

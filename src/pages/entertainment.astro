@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import PDFModal from '../components/PDFModal.astro';
+
+const imageModules = import.meta.glob<{ default: ImageMetadata }>('../assets/products/entertainment/*.png', { eager: true });
+const pdfModules = import.meta.glob<{ default: string }>('../assets/products/entertainment/*.pdf', { eager: true });
+
+const products = Object.keys(imageModules)
+  .map(imagePath => {
+    const fileName = imagePath.split('/').pop()?.replace('.png', '');
+    if (!fileName) {
+      return null;
+    }
+
+    const pdfPath = `../assets/products/entertainment/${fileName}.pdf`;
+    const pdfModule = pdfModules[pdfPath];
+    const imageModule = imageModules[imagePath];
+
+    if (!imageModule || !pdfModule) {
+      return null;
+    }
+
+    return {
+      name: fileName,
+      image: imageModule.default,
+      pdf: pdfModule.default,
+    };
+  })
+  .filter((p): p is NonNullable<typeof p> => p !== null);
+
+---
+
+<Layout>
+  <Header />
+  <main class="container mx-auto px-6 py-8">
+    <h1 class="text-4xl font-bold text-center mt-15 text-olive-dark mb-12">Centros de Entretenimiento</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {products.map(entertainment => (
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer" data-pdf={entertainment.pdf}>
+          <Image src={entertainment.image} alt={entertainment.name} class="w-full h-80 object-cover"/>
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-olive-dark text-center">{entertainment.name}</h3>
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+  <Footer />
+  <PDFModal />
+</Layout>
